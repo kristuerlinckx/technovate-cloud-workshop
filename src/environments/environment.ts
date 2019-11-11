@@ -3,7 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebase: {
+    apiKey: 'AIzaSyBkVW21X6pE_k1ut4qdKb3MmOV1UdIMNu8',
+    authDomain: 'tafun-maessageboard-solution.firebaseapp.com',
+    databaseURL: 'https://tafun-maessageboard-solution.firebaseio.com',
+    projectId: 'tafun-maessageboard-solution',
+    storageBucket: 'tafun-maessageboard-solution.appspot.com',
+    messagingSenderId: '715158297848',
+    appId: '1:715158297848:web:fb64c77645d876cc14af0d',
+    measurementId: 'G-TVEL1X31Q4'
+  }
 };
 
 /*
