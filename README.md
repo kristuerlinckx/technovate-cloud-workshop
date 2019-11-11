@@ -72,7 +72,7 @@ Now all files are in place, we still need to configure one thing: the connection
     ng build
     firebase deploy
   ```
-If all whent well, when you now go to your application url, you should see the Message board.
+If all went well, when you now go to your application url, you should see the Message board.
 ![Message Board on Firebase][step1b-finished]
 
 Try adding messages on the board. You'll see them appear, but the sentiment will remain blue, since we haven't configured anything yet. Let's get down to business and get to the real work in the next steps.
