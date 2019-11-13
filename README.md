@@ -134,6 +134,21 @@ If all went well, when you now go to your application url and enter text, you sh
 
 If you really are stuck and want to try out the extra steps, checkout the solution brench `v2-message-sentiment-rating-solution` and check what's going wrong.
 
+## Step 3 - Smeagol
+Smeagol is the new, bipolar customer of our shop. Let's simulate him on Google's PaaS platform Google App Engine!
+Go to the [tafun-cloud-smeagol](https://github.com/AE-nv/tafun-cloud-smeagol/tree/master) repo and finish the first part of the exercise. Only start with the next part if Smeagol is running freely in your Google App Engine environment.
+
+### Step 3e - Configure the messageboard to subscribe to Smeagol messages
+Since you already have the example from the previous exercise, we will leave you more freely in this exercise. There is no template, only a solution (v3-smeagol-solution) if you really are stuck.
+
+Implement a cloud function that:
+* Subscribes to the topic you created for Smeagol messages
+* Writes the messages to the Firestore so they are visible on the message board.
+
+If everything whent well, you should be seeing messages from Smeagol on your board!
+![Smeagol][step3-finished]
+
+
 ## Angular Documentation
 ### Development server
 
@@ -148,3 +163,4 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 [step1a-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step1a-finished.png "Clean Angular on Firebase"
 [step1b-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step1b-finished.png "Message Board on Firebase"
 [step2-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step2-finished.png "Sentiment analysis"
+[step3-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step3-finished.png "Smeagol"
