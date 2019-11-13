@@ -145,7 +145,7 @@ Implement a cloud function that:
 * Subscribes to the topic you created for Smeagol messages
 * Writes the messages to the Firestore so they are visible on the message board.
 
-If everything whent well, you should be seeing messages from Smeagol on your board!
+If everything went well, you should be seeing messages from Smeagol on your board!
 ![Smeagol][step3-finished]
 
 
