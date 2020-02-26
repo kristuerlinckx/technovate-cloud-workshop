@@ -1,15 +1,23 @@
 # MessageBoard
 
-As a part of the TA Fundamentals Cloud training, we will go through an exercise in which we deploy a message board on Firebase. Functionality of this board is then further extended using Cloud Functions, Google Cloud Pub/Sub, ...
+We will go through an exercise in which we deploy a message board on Firebase. Functionality of this board can then be further extended using Cloud Functions, Google Cloud Pub/Sub, ...
 
-**Attendees of this course will start their own project and copy parts of this repo in theirs or use it in case of trouble to get the solution.**
+**Attendees of this workshop will start their own project and copy parts of this repo in theirs or use it in case of trouble to get the solution.**
+
+The presenter is available for all questions. But it's best to think a couple minutes about the problem before calling the hotline :)
 
 ## Step 0 - Setting up your environment
 In order to start, make sure the following is setup:
+* Install Git
+  * https://git-scm.com/downloads
+* Clone this repository:
+```
+git clone https://github.com/Lukkie/technovate-cloud-messageboard.git
+```
 * You have a working Google Cloud subscription (use the $300 free allowance to get started without any costs).
   [Click here](https://console.cloud.google.com) to get to the Google Cloud Platform (GCP).
-* You have a project with a billing account linked to it. In a billing account you have to provide **credit card information**. If you used the €300 free allowance, you won't be billed. **IMPORTANT: DON'T FORGET TO REMOVE THE GCP PROJECT AFTER THIS SESSION!** If you don't, costs will build up and you will get a bill eventually.
-* Make sure [npm](https://www.npmjs.com/get-npm) is setup. The exact way you install npm, depends on the OS you're using.
+  * **The account has been provided to you by AE for the duration of the Technovate.**
+* Make sure [npm](https://www.npmjs.com/get-npm) is setup. The exact way you install npm depends on the OS you're using.
 * Download the Angular CLI to create your own project that we will deploy to Firebase.
   ```bash
   npm install -g @angular/cli
@@ -21,7 +29,7 @@ In order to start, make sure the following is setup:
 
 ## Step 1a - Deploying the project
 This is not a course on Angular, but we need a project to deploy to Firebase. Follow these steps to do your first deploy.
-* Create a new Angular project with the name "message-board".
+* Create a new Angular project with the name "message-board". Make sure to create this project on a location that is different from the git repository you checked out.
   ```bash
   ng new
   ```
@@ -35,11 +43,7 @@ This is not a course on Angular, but we need a project to deploy to Firebase. Fo
   * Use the defaults for all choices, except:
     * Use `TypeScript` for functions.
     * Use `dist` as the public directory.
-* Build the Angular project.
-  ```bash
-  ng build
-  ```
-* Uncomment the hello world function in `functions/src/index.ts` to prevent firebase deploy from failing on TSLint.
+* Uncomment the hello world function in `functions/src/index.ts`. This function responds to a request by returning `"Hello from Firebase!"`.
   ```js
     export const helloWorld = functions.https.onRequest((request, response) => {
         response.send("Hello from Firebase!");
@@ -50,9 +54,29 @@ This is not a course on Angular, but we need a project to deploy to Firebase. Fo
   firebase deploy
   ```
 
-When you go to your application url (See the deploy output), you should see the following UI:
+When you go to your application url (see deploy output), you will see "Firebase Hosting Setup Complete".
 
-![Clean Angular on Firebase][step1a-finished]
+This corresponds with index.html in your `dist` directory. This is the public directory and is "served" by firebase. We will build the Angular project in this directory so that it's hosted by Firebase. This is why we needed to change the output directory earlier.
+
+* Build the Angular project and redeploy to Firebase.
+  ```bash
+  ng build
+  firebase deploy
+  ```
+
+  When you now go to your application url, you should see the following UI:
+
+  ![Clean Angular on Firebase](doc/images/step1a-finished.png)
+
+  If you're still seeing the same UI as before, make sure to clear your cache, or disable caching in the Developer Tools (under the Network tab).
+
+* The functions have also been deployed. The URL for your HelloWorld function is also displayed in the deploy notes. Try opening it in your web browser!
+
+* Additional information (not part of this workshop but may be useful):
+  * All URLs can also be found by navigating to the Firebase console: https://console.firebase.google.com
+  * If you don't like having to execute `firebase deploy` whenever you want to push a change, or when you want to separate your website from your functions, you can try to deploy your site on Heroku or Netlify. Both have integrations with GitHub and will automatically update your website when the GitHub repository changes. You could even introduce some kind of CI (e.g. CircleCI) so that the `ng build` step is also automatically executed.
+
+
 
 ## Step 1b - Add the Message board to the application
 Now we're going to add the Message board front-end to our application. Since this is not a course on Angular, we don't go into detail and you can just copy the right files from this project to your project.
@@ -65,37 +89,36 @@ Now we're going to add the Message board front-end to our application. Since thi
   npm install
   ```
 
-Now all files are in place, we still need to configure one thing: the connection between the Front End we're creating and the Firebase Back End. Take a look at `src/environments/environment.ts`. You see we need to configure some properties so your angular application knows how it can connect to Firebase. 
+Now all files are in place, we still need to configure one thing: the connection between the Front End we're creating and the Firebase Back End. Take a look at `src/environments/environment.ts`. You see we need to configure some properties so your angular application knows how it can connect to Firebase.
 * Find out where you can find these variables on Firebase and configure them in `src/environments/enviornment.ts`.
+  * Hint: Go to the Firebase's web console.
 * Build and deploy your application to Firebase.
   ```bash
   ng build
   firebase deploy
   ```
 If all went well, when you now go to your application url, you should see the Message board.
-![Message Board on Firebase][step1b-finished]
+![Message Board on Firebase](doc/images/step1b-finished.png)
 
-Try adding messages on the board. You'll see them appear, but the sentiment will remain blue, since we haven't configured anything yet. Let's get down to business and get to the real work in the next steps.
+Try adding messages on the board. You'll see them appear, but the sentiment will remain blue, since we haven't configured anything yet. If you refresh the page, the message will disappear. Let's get down to business and get to the real work in the next steps.
 
 ## Step 2 - Sentiment analysis
 Now, let's add sentiment analysis to our application.
-* Checkout the `v2-message-sentiment-rating` branch from this repo.
-* Copy the functions directory to your own project. This will be the starter template for this exercise.
 
-In this exercise, you'll add 2 cloud functions:
+We'll add 2 cloud functions:
 * `translateMessageToEnglish`:
   Translate messages from all languages to English using a Google managed service.
   The web app creates messages in the Firestore on the path 'messages/{messageId}'.
   Make a function that:
-  * is triggered by this creation event, 
+  * is triggered by this creation event,
   * translates the message using Google Cloud Translation library,
   * update the Firestore message with the translation in the field "en"
-  * and returns false (Convention for Google Cloud Functions) 
+  * and returns false (Convention for Google Cloud Functions)
 * `checkMessageSentiment`:
   Check the sentiment of an English message using a Google managed service.
   The first function updated the message with an English translation on field "en".
   Make a function that:
-  * is triggered by this update event, 
+  * is triggered by this update event,
   * retrieves a sentiment score between -1 and 1 from a Google Cloud Language service,  
   * update the Firestore message with the sentiment in the field "score"
   * and returns false (Convention for Google Cloud Functions)
@@ -112,55 +135,19 @@ export interface Message {
 ```
 When you write to the FireStore, do it following this interface in order for everything to work properly.
 
-A couple of hints:
-* You'll need to enable the APIs for both the translation service and the language service in the Google Cloud console.
-* In the template, we already added npm packages for both APIs that serve as a proxy to the google services. Use those instead of calling the APIs directly.
-* Something JavaScript specify. Promises in JavaScript need to handle unlucky patchs (exceptions). TSLint will fail if you don't handle them. Just catch the error and log it to the console. **Don't do this in a real production environment! Always properly handle your exceptions.** Example:
-  ```js
-  snapshot.ref.set(message)
-    .catch((err: string) => {
-      console.error('ERROR:', err);
-    }
-  );
-  ```
-* The [Firebase Console](https://console.firebase.google.com) provides a UI to see the logs of your cloud functions. Your cloud function obsiously needs to be deployed on Firebase.
+Developing the functions on your own would probably not fit in this workshop. **The finished code for this functions is available in the Git repo in the functions directory.** Make sure to overwrite the whole directory and adapt the project ID in `index.ts`.
+
+**You'll still need to enable the APIs for both the translation service and the language service in the Google Cloud console:**
+https://console.cloud.google.com
+
+* In the template, we already added npm packages for both APIs that serve as a proxy to the google services. We use those instead of calling the APIs directly.
+  * Install these packages by going to the `functions` directory and running `npm install`.
+* Something JavaScript specify. Promises in JavaScript need to handle unlucky paths (exceptions). TSLint will fail if you don't handle them. In this demo, we just catch the error and log it to the console. **Don't do this in a real production environment! Always properly handle your exceptions.**
+* The [Firebase Console](https://console.firebase.google.com) provides a UI to see the logs of your cloud functions. Your cloud function obviously needs to be deployed on Firebase.
 * You can also only deploy functions using the following command. This will be much faster than deploying the entire project.
   ```bash
-  firebase deploy --only function 
+  firebase deploy --only functions
   ```
 
 If all went well, when you now go to your application url and enter text, you should see emojis on the Message board.
-![Sentiment analysis][step2-finished]
-
-If you really are stuck and want to try out the extra steps, checkout the solution brench `v2-message-sentiment-rating-solution` and check what's going wrong.
-
-## Step 3 - Smeagol
-Smeagol is the new, bipolar customer of our shop. Let's simulate him on Google's PaaS platform Google App Engine!
-Go to the [tafun-cloud-smeagol](https://github.com/AE-nv/tafun-cloud-smeagol/tree/master) repo and finish the first part of the exercise. Only start with the next part if Smeagol is running freely in your Google App Engine environment.
-
-### Step 3e - Configure the messageboard to subscribe to Smeagol messages
-Since you already have the example from the previous exercise, we will leave you more freely in this exercise. There is no template, only a solution (v3-smeagol-solution) if you really are stuck.
-
-Implement a cloud function that:
-* Subscribes to the topic you created for Smeagol messages
-* Writes the messages to the Firestore so they are visible on the message board.
-
-If everything went well, you should be seeing messages from Smeagol on your board!
-![Smeagol][step3-finished]
-
-
-## Angular Documentation
-### Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-### Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-
-
-[step1a-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step1a-finished.png "Clean Angular on Firebase"
-[step1b-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step1b-finished.png "Message Board on Firebase"
-[step2-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step2-finished.png "Sentiment analysis"
-[step3-finished]: https://github.com/AE-nv/tafun-cloud-messageboard/raw/master/doc/images/step3-finished.png "Smeagol"
+![Sentiment analysis](doc/images/step2-finished.png)
