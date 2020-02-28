@@ -16,7 +16,8 @@ git clone https://github.com/Lukkie/technovate-cloud-messageboard.git
 ```
 * You have a working Google Cloud subscription (use the $300 free allowance to get started without any costs).
   [Click here](https://console.cloud.google.com) to get to the Google Cloud Platform (GCP).
-  * **The account has been provided to you by AE for the duration of the Technovate.**
+  * For this, you need a valid credit card. It's very unlikely that you'll have to pay anything, but it doesn't hurt to be careful.
+  * **If you're really struggling to find a credit card, AE may provide an account for the duration of the Technovate. There are only a couple accounts available though.**
 * Make sure [npm](https://www.npmjs.com/get-npm) is setup. The exact way you install npm depends on the OS you're using.
 * Download the Angular CLI to create your own project that we will deploy to Firebase.
   ```bash
@@ -151,3 +152,17 @@ https://console.cloud.google.com
 
 If all went well, when you now go to your application url and enter text, you should see emojis on the Message board.
 ![Sentiment analysis](doc/images/step2-finished.png)
+
+
+## Extending the dashboard
+If you have plenty of time left after finishing the workshop, you can try implementing following extensions:
+* Instead of typing a message, you could let users write down their messages in handwriting and translate this to text using the handwriting API. https://cloud.google.com/vision/docs/handwriting
+  * Add an input field that accepts handwriting
+  * Send Base64 encoded image to firestore
+  * Create cloud function that reads firestore updates and translates the image to text
+* Or you could allow users to send a small voice recording and translate this to text using the speech-to-text API. https://cloud.google.com/speech-to-text
+  * Add a record button (start + stop)
+  * On stop, send the recorded sound to firestore or a cloud function
+  * Some links that I've found that may be useful:
+    * https://github.com/googleapis/nodejs-speech/tree/master/samples
+    * https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
