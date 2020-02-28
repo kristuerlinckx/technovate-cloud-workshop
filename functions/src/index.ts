@@ -25,30 +25,9 @@ const projectId = 'REPLACE THIS';
  */
 exports.translateMessageToEnglish = functions.firestore.document('messages/{messageId}').onCreate((snapshot) => {
   const message = snapshot.data();
-  console.log(message);
-  if (message !== undefined && message.en === undefined) {
-    console.log(`Document translation:`);
-    console.log(`Original   : ${message.descr}`);
-    const translate = new Translate({
-      projectId: projectId,
-    });
-    return translate.translate(message.descr, {to: 'en'})
-      .then((results: Array<string>) => {
-        const translation = results[0];
-        console.log(results);
-        console.log(`Translation: ${translation}`);
-        message.en = translation;
-        console.log(message);
-        snapshot.ref.set(message)
-          .catch((err: string) => {
-            console.error('ERROR:', err);
-          }
-        );
-      })
-      .catch((err: string) => {
-        console.error('ERROR:', err);
-      });
-  }
+
+  // TODO: Implement this
+
   return false;
 });
 
@@ -70,31 +49,7 @@ exports.translateMessageToEnglish = functions.firestore.document('messages/{mess
 exports.checkMessageSentiment = functions.firestore.document('messages/{messageId}').onUpdate((snapshot) => {
   const message = snapshot.after.data();
 
-  if (message !== undefined && message.en !== undefined && message.score === undefined) {
-    const client = new language.LanguageServiceClient();
-    const document = {
-      content: message.en,
-      type: 'PLAIN_TEXT',
-    };
+  // TODO: Implement this
 
-    return client
-      .analyzeSentiment({document: document})
-      .then((results: Array<any>) => {
-        message.score = results[0].documentSentiment.score;
-        console.log(`Document sentiment:`);
-        console.log(`  Text   : ${message.descr}`);
-        console.log(`  English: ${message.en}`);
-        console.log(`  Score  : ${message.score}`);
-
-        snapshot.after.ref.set(message)
-          .catch((err: string) => {
-            console.error('ERROR:', err);
-          }
-        );
-      })
-      .catch((err: string) => {
-        console.error('ERROR:', err);
-      });
-  }
   return false;
 });
